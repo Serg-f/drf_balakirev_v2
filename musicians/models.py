@@ -16,7 +16,7 @@ class Instrument(models.Model):
 
 
 class Musician(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     description = models.TextField()
     age = models.PositiveIntegerField()
     instrument = models.ForeignKey(Instrument, on_delete=models.CASCADE)

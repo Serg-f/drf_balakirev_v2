@@ -1,6 +1,5 @@
 from rest_framework import serializers
-
-from musicians.models import Style, Instrument
+from musicians.models import Style, Instrument, Musician
 
 
 class StyleSerializer(serializers.ModelSerializer):
@@ -8,26 +7,21 @@ class StyleSerializer(serializers.ModelSerializer):
         model = Style
         fields = ('id', 'name')
 
+
 class InstrumentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Instrument
         fields = ('id', 'name')
 
 
-class ListViewSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    description = serializers.CharField()
-    age = serializers.IntegerField()
-    instrument = serializers.SerializerMethodField()
-    styles = serializers.SerializerMethodField()
-    is_published = serializers.BooleanField(required=False)
-    created = serializers.DateTimeField(read_only=True)
-    updated = serializers.DateTimeField(read_only=True)
+class MusicianSerializer(serializers.ModelSerializer):
+    instrument_details = InstrumentSerializer(source='instrument', read_only=True)
+    styles_details = StyleSerializer(many=True, source='styles', read_only=True)
+    instrument = serializers.PrimaryKeyRelatedField(queryset=Instrument.objects.all(), write_only=True)
+    styles = serializers.PrimaryKeyRelatedField(queryset=Style.objects.all(), many=True, write_only=True)
 
-    def get_styles(self, obj):
-        styles = obj.styles.all()
-        return StyleSerializer(styles, many=True).data
-
-    def get_instrument(self, obj):
-        return InstrumentSerializer(obj.instrument).data
+    class Meta:
+        model = Musician
+        fields = ('id', 'name', 'description', 'age', 'instrument', 'instrument_details', 'styles', 'styles_details',
+                  'is_published', 'created', 'updated')
+        read_only_fields = ('created', 'updated')
