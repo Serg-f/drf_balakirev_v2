@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'musicians.apps.MusiciansConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
